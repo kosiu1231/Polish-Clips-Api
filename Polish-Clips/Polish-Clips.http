@@ -1,0 +1,6 @@
+@Polish_Clips_HostAddress = http://localhost:5098
+
+GET {{Polish_Clips_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
