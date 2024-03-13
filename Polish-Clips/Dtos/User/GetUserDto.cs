@@ -1,6 +1,4 @@
-﻿using Polish_Clips.Models;
-
-namespace Polish_Clips.Dtos.User
+﻿namespace Polish_Clips.Dtos.User
 {
     public class GetUserDto
     {

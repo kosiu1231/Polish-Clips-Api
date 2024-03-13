@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Polish_Clips.Dtos.User
+﻿namespace Polish_Clips.Dtos.User
 {
     public class ResetPasswordRequest
     {
