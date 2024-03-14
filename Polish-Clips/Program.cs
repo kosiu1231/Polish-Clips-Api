@@ -1,6 +1,7 @@
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Mvc;
 global using System.ComponentModel.DataAnnotations;
+global using Hangfire;
 global using Polish_Clips.Models;
 global using Polish_Clips.Dtos.User;
 global using Polish_Clips.Data;
@@ -45,6 +46,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddHangfire((sp, config) =>
+{
+    var connectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
+    config.UseSqlServerStorage(connectionString);
+});
+
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,5 +68,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHangfireDashboard();
+
+//RecurringJob.AddOrUpdate("TestJob",
+//                        () => Polish_Clips.Background_Jobs.TwitchApiCall.PrintDateTime(),
+//                        "* * * * *");
 
 app.Run();
