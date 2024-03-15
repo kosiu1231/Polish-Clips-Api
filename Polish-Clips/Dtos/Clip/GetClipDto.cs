@@ -1,6 +1,6 @@
-﻿namespace Polish_Clips.Models
+﻿namespace Polish_Clips.Dtos.Clip
 {
-    public class Clip
+    public class GetClipDto
     {
         public int Id { get; set; }
         public string TwitchId { get; set; } = string.Empty;
@@ -10,9 +10,9 @@
         public string StreamerName { get; set; } = string.Empty;
         public float Duration { get; set; } = 0;
         public int LikeAmount { get; set; } = 0;
-        public User? User { get; set; }
-        public Game? Game { get; set; }
-        public List<Comment>? Comments { get; set; }
+        public GetUserDto? User { get; set; }
+        public GetGameDto? Game { get; set; }
+        public List<GetCommentDto>? Comments { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
