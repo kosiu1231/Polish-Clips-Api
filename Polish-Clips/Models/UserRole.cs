@@ -2,7 +2,7 @@
 
 namespace Polish_Clips.Models
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonStringEnumConverter))]
     public enum UserRole
     {
         User = 1,
