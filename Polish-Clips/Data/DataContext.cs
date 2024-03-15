@@ -13,5 +13,6 @@
         public DbSet<Game> Games => Set<Game>();
         public DbSet<Like> Likes => Set<Like>();
         public DbSet<Report> Reports => Set<Report>();
+        public DbSet<Broadcaster> Broadcasters => Set<Broadcaster>();
     }
 }
