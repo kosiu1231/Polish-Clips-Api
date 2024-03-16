@@ -20,5 +20,16 @@
             }
             return Ok(response);
         }
+
+        [HttpPost("autoclipsbystreamers")]//only for testing, remove later
+        public async Task<ActionResult<ServiceResponse<string>>> AddClipsByStreamers()
+        {
+            var response = await _twitchApiService.AddClipsByStreamers();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }

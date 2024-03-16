@@ -1,4 +1,6 @@
-﻿namespace Polish_Clips.Services.TwitchApiService
+﻿using Polish_Clips.Models;
+
+namespace Polish_Clips.Services.TwitchApiService
 {
     public class TwitchApiService : ITwitchApiService
     {
@@ -36,7 +38,7 @@
                         return response;
                     }
 
-                    games = await GetGame(gameByObject);
+                    games = await GetGameFromApi(gameByObject);
                 }
                 else
                 {
@@ -47,7 +49,7 @@
                         return response;
                     }
 
-                    games = await GetGame(gameByObject);
+                    games = await GetGameFromApi(gameByObject);
                 }
 
                 if (games.Count() < 1)
@@ -83,7 +85,7 @@
             return response;
         }
 
-        public async Task<List<TwitchApiGameObject>> GetGame(TwitchApiGetGameBy gameByObject)
+        public async Task<List<TwitchApiGameObject>> GetGameFromApi(TwitchApiGetGameBy gameByObject)
         {
             string baseUrl = "https://api.twitch.tv/helix/games";
             string accessToken = "wctrbwdc88lix37nrud4o7bld4uviu";
@@ -115,6 +117,119 @@
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
                     var apiResponse = JsonConvert.DeserializeObject<TwitchApiGameResponse>(responseBody);
+                    return apiResponse!.data;
+                }
+                else
+                {
+                    throw new HttpRequestException($"HTTP request failed: {response.StatusCode}, {response.ReasonPhrase}");
+                }
+            }
+        }
+
+        public async Task<ServiceResponse<string>> AddClipsByStreamers()
+        {
+            var response = new ServiceResponse<string>();
+
+            try
+            {
+                var streamers = await _context.Broadcasters.ToListAsync();
+                List<TwitchApiClipObject> clips = new List<TwitchApiClipObject>();
+                int clipsAdded = 0;
+
+                foreach (var streamer in streamers)
+                {
+                    clips = await GetClipsByStreamersFromApi(streamer.TwitchId);
+
+                    if (clips.Count() == 0)
+                        continue;
+
+                    foreach(var clip in clips)
+                    {
+                        if(clip.view_count < 200)
+                        {
+                            break;
+                        }
+
+                        if (await _context.Clips.AnyAsync(c => c.TwitchId == clip.id))
+                        {
+                            continue;
+                        }
+
+                        var newClip = new Clip
+                        {
+                            TwitchId = clip.id,
+                            Title = clip.title,
+                            EmbedUrl = clip.embed_url,
+                            StreamerName = clip.broadcaster_name,
+                            CreatedAt = clip.created_at,
+                            ThumbnailUrl = clip.thumbnail_url,
+                            Duration = clip.duration
+                        };
+
+                        newClip.Game = await _context.Games.FirstOrDefaultAsync(g => g.Id == clip.game_id);
+
+                        if (newClip.Game is null)
+                        {
+                            TwitchApiGetGameBy gameByObject = new TwitchApiGetGameBy
+                            {
+                                Id = clip.game_id,
+                                ByName = false
+                            };
+
+                            await AddGame(gameByObject);
+                            newClip.Game = await _context.Games.FirstOrDefaultAsync(g => g.Id == clips[0].game_id);
+                        }
+
+                        _context.Clips.Add(newClip);
+                        newClip.Game!.Clips!.Add(newClip);
+                        clipsAdded++;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                response.Data = $"{clipsAdded} clips added to DB";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+
+            }
+            
+            return response;
+        }
+
+        public async Task<List<TwitchApiClipObject>> GetClipsByStreamersFromApi(int streamerId)
+        {
+            string baseUrl = "https://api.twitch.tv/helix/clips";
+            string accessToken = "wctrbwdc88lix37nrud4o7bld4uviu";
+            var clientId = _configuration.GetSection("TwitchApi:clientId").Value;
+            DateTime startDate = DateTime.UtcNow.AddDays(-1);
+            DateTime endDate = DateTime.UtcNow;
+            string startDateRFC = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK");
+            string endDateRFC = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK");
+
+            if (clientId is null)
+            {
+                throw new Exception("TwitchApi:clientId is empty");
+            }
+            else if (accessToken is null)
+            {
+                throw new Exception("Failed to get accessToken");
+            }
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+                client.DefaultRequestHeaders.Add("Client-Id", clientId);
+
+                string requestUrl = $"{baseUrl}?broadcaster_id={streamerId}&started_at={startDateRFC}&ended_at={endDateRFC}";
+                HttpResponseMessage response = await client.GetAsync(requestUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    var apiResponse = JsonConvert.DeserializeObject<TwitchApiClipResponse>(responseBody);
                     return apiResponse!.data;
                 }
                 else

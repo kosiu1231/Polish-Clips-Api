@@ -86,8 +86,7 @@ app.MapControllers();
 
 app.UseHangfireDashboard();
 
-//RecurringJob.AddOrUpdate("TestJob",
-//                        () => Polish_Clips.Twitch_Api.TwitchApiCall.PrintDateTime(),
-//                        "* * * * *");
+//RecurringJob.AddOrUpdate<TwitchApiService>("TestJob", (x) =>
+//                                          x.AddClipsJob(), "0 */2 * * *");//every 2 full hours
 
 app.Run();

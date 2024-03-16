@@ -3,5 +3,6 @@
     public interface ITwitchApiService
     {
         Task<ServiceResponse<string>> AddGame(TwitchApiGetGameBy gameByObject);
+        Task<ServiceResponse<string>> AddClipsByStreamers();
     }
 }
