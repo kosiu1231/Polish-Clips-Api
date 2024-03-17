@@ -14,5 +14,6 @@
         public DbSet<Like> Likes => Set<Like>();
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<Broadcaster> Broadcasters => Set<Broadcaster>();
+        public DbSet<TwitchAccessToken> TwitchAccessTokens => Set<TwitchAccessToken>();
     }
 }

@@ -88,17 +88,23 @@ namespace Polish_Clips.Services.TwitchApiService
         public async Task<List<TwitchApiGameObject>> GetGameFromApi(TwitchApiGetGameBy gameByObject)
         {
             string baseUrl = "https://api.twitch.tv/helix/games";
-            string accessToken = "wctrbwdc88lix37nrud4o7bld4uviu";
+            var accessTokenObject = _context.TwitchAccessTokens.FirstOrDefault();
             var clientId = _configuration.GetSection("TwitchApi:clientId").Value;
 
             if (clientId is null)
             {
                 throw new Exception("TwitchApi:clientId is empty");
             }
-            else if (accessToken is null)
+            else if (accessTokenObject is null)
             {
                 throw new Exception("Failed to get accessToken");
             }
+            else if (accessTokenObject.ExpiresAt < DateTime.Now)
+            {
+                await RefreshTwitchAccessToken();
+            }
+
+            string accessToken = accessTokenObject.Value;
 
             using (HttpClient client = new HttpClient())
             {
@@ -202,7 +208,7 @@ namespace Polish_Clips.Services.TwitchApiService
         public async Task<List<TwitchApiClipObject>> GetClipsByStreamersFromApi(int streamerId)
         {
             string baseUrl = "https://api.twitch.tv/helix/clips";
-            string accessToken = "wctrbwdc88lix37nrud4o7bld4uviu";
+            var accessTokenObject = _context.TwitchAccessTokens.FirstOrDefault();
             var clientId = _configuration.GetSection("TwitchApi:clientId").Value;
             DateTime startDate = DateTime.UtcNow.AddDays(-1);
             DateTime endDate = DateTime.UtcNow;
@@ -213,10 +219,16 @@ namespace Polish_Clips.Services.TwitchApiService
             {
                 throw new Exception("TwitchApi:clientId is empty");
             }
-            else if (accessToken is null)
+            else if (accessTokenObject is null)
             {
                 throw new Exception("Failed to get accessToken");
             }
+            else if(accessTokenObject.ExpiresAt < DateTime.Now)
+            {
+                await RefreshTwitchAccessToken();
+            }
+
+            string accessToken = accessTokenObject.Value;
 
             using (HttpClient client = new HttpClient())
             {
@@ -237,6 +249,67 @@ namespace Polish_Clips.Services.TwitchApiService
                     throw new HttpRequestException($"HTTP request failed: {response.StatusCode}, {response.ReasonPhrase}");
                 }
             }
+        }
+
+        public async Task<ServiceResponse<string>> RefreshTwitchAccessToken()
+        {
+            var response = new ServiceResponse<string>();
+
+            try
+            {
+                var accessToken = _context.TwitchAccessTokens.FirstOrDefault();
+                string baseUrl = "https://id.twitch.tv/oauth2/token";
+                var clientId = _configuration.GetSection("TwitchApi:clientId").Value;
+                var clientSecret = _configuration.GetSection("TwitchApi:clientSecret").Value;
+                string grantType = "client_credentials";
+
+                if (clientId is null)
+                {
+                    throw new Exception("TwitchApi:clientId is empty");
+                }
+                else if (accessToken is null)
+                {
+                    throw new Exception("Failed to get accessToken");
+                }
+                else if (clientSecret is null)
+                {
+                    throw new Exception("TwitchApi:clientSecret is empty");
+                }
+
+                using (HttpClient client = new HttpClient())
+                {
+                    var parameters = new Dictionary<string, string>
+                {
+                    { "client_id", clientId },
+                    { "client_secret", clientSecret },
+                    { "grant_type", grantType }
+                };
+
+                    var content = new FormUrlEncodedContent(parameters);
+                    HttpResponseMessage apiResponse = await client.PostAsync(baseUrl, content);
+
+                    if (apiResponse.IsSuccessStatusCode)
+                    {
+                        string responseBody = await apiResponse.Content.ReadAsStringAsync();
+                        var newAccessToken = JsonConvert.DeserializeObject<TwitchApiAccessTokenObject>(responseBody);
+                        accessToken.Value = newAccessToken!.access_token;
+                        accessToken.ExpiresAt = DateTime.Now.AddMinutes((newAccessToken.expires_in / 60) - 5);
+                        await _context.SaveChangesAsync();
+                        response.Data = $"Token refreshed";
+                    }
+                    else
+                    {
+                        throw new HttpRequestException($"HTTP request failed: {apiResponse.StatusCode}, {apiResponse.ReasonPhrase}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
         }
     }
 }

@@ -89,17 +89,23 @@
         public async Task<List<TwitchApiClipObject>> GetClipFromApi(string clipId)
         {
             string baseUrl = "https://api.twitch.tv/helix/clips";
-            string accessToken = "wctrbwdc88lix37nrud4o7bld4uviu";
+            var accessTokenObject = _context.TwitchAccessTokens.FirstOrDefault();
             var clientId = _configuration.GetSection("TwitchApi:clientId").Value;
 
             if (clientId is null)
             {
                 throw new Exception("TwitchApi:clientId is empty");
             }
-            else if (accessToken is null)
+            else if (accessTokenObject is null)
             {
                 throw new Exception("Failed to get accessToken");
             }
+            else if (accessTokenObject.ExpiresAt < DateTime.Now)
+            {
+                await _twitchApiService.RefreshTwitchAccessToken();
+            }
+
+            string accessToken = accessTokenObject.Value;
 
             using (HttpClient client = new HttpClient())
             {

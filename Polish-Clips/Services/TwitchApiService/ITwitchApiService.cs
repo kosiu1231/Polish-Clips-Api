@@ -4,5 +4,6 @@
     {
         Task<ServiceResponse<string>> AddGame(TwitchApiGetGameBy gameByObject);
         Task<ServiceResponse<string>> AddClipsByStreamers();
+        Task<ServiceResponse<string>> RefreshTwitchAccessToken();
     }
 }
