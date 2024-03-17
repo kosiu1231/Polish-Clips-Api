@@ -12,6 +12,7 @@ global using Polish_Clips.Dtos.User;
 global using Polish_Clips.Dtos.Clip;
 global using Polish_Clips.Dtos.Helpers;
 global using Polish_Clips.Dtos.Comment;
+global using Polish_Clips.Dtos.Broadcaster;
 global using Polish_Clips.Services.TwitchApiService;
 global using Polish_Clips.Services.ClipService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,7 +68,7 @@ builder.Services.AddHangfire((sp, config) =>
     config.UseSqlServerStorage(connectionString);
 });
 
-//builder.Services.AddHangfireServer();
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
@@ -86,7 +87,10 @@ app.MapControllers();
 
 app.UseHangfireDashboard();
 
-//RecurringJob.AddOrUpdate<TwitchApiService>("TestJob", (x) =>
-//                                          x.AddClipsJob(), "0 */2 * * *");//every 2 full hours
+//RecurringJob.AddOrUpdate<TwitchApiService>("AddClipsJob", (x) =>
+//x.AddClipsByStreamers(), "0 */2 * * *");//every 2 full hours
+
+//RecurringJob.AddOrUpdate<TwitchApiService>("AddBroadcastersJob", (x) =>
+//x.AddBroadcasters(), "0 */3 * * *");//every 3 full hours
 
 app.Run();

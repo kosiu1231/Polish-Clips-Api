@@ -31,5 +31,16 @@
             }
             return Ok(response);
         }
+
+        [HttpPost("autobroadcasters")]//only for testing, remove later
+        public async Task<ActionResult<ServiceResponse<string>>> AddBroadcasters()
+        {
+            var response = await _twitchApiService.AddBroadcasters();
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }
