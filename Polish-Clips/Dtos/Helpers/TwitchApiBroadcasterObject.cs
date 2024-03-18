@@ -1,4 +1,4 @@
-﻿namespace Polish_Clips.Dtos.Broadcaster
+﻿namespace Polish_Clips.Dtos.Helpers
 {
     public class TwitchApiBroadcasterObject
     {

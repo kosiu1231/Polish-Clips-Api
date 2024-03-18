@@ -12,7 +12,6 @@ global using Polish_Clips.Dtos.User;
 global using Polish_Clips.Dtos.Clip;
 global using Polish_Clips.Dtos.Helpers;
 global using Polish_Clips.Dtos.Comment;
-global using Polish_Clips.Dtos.Broadcaster;
 global using Polish_Clips.Services.TwitchApiService;
 global using Polish_Clips.Services.ClipService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

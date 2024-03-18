@@ -1,4 +1,4 @@
-﻿namespace Polish_Clips.Dtos.Clip
+﻿namespace Polish_Clips.Dtos.Helpers
 {
     public class TwitchApiClipObject
     {
