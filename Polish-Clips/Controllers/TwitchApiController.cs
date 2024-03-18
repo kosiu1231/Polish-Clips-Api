@@ -10,7 +10,7 @@
             _twitchApiService = twitchApiService;
         }
 
-        [HttpPost("game")]
+        [HttpPost("game")]//only for testing, remove later
         public async Task<ActionResult<ServiceResponse<string>>> AddGame(TwitchApiGetGameBy gameByObject)
         {
             var response = await _twitchApiService.AddGame(gameByObject);

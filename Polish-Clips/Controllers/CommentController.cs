@@ -30,9 +30,6 @@ namespace Polish_Clips.Controllers
         [HttpDelete("comment")]
         public async Task<ActionResult<ServiceResponse<GetClipDto>>> DeleteComment(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var response = await _commentService.DeleteComment(id);
             if (response.Data is null)
                 return NotFound(response);

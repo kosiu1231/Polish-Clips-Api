@@ -9,7 +9,6 @@ namespace Polish_Clips.Controllers
         private readonly IClipService _clipService;
         public ClipController(IClipService clipService)
         {
-
             _clipService = clipService;
         }
 
