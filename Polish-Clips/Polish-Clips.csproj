@@ -27,9 +27,4 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\CommentService\" />
-    <Folder Include="Services\ReportService\" />
-  </ItemGroup>
-
 </Project>
