@@ -14,6 +14,8 @@ global using Polish_Clips.Dtos.Helpers;
 global using Polish_Clips.Dtos.Comment;
 global using Polish_Clips.Services.TwitchApiService;
 global using Polish_Clips.Services.ClipService;
+global using Polish_Clips.Services.CommentService;
+global using Polish_Clips.Services.ReportService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -47,6 +49,8 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<ITwitchApiService, TwitchApiService>();
 builder.Services.AddScoped<IClipService, ClipService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
