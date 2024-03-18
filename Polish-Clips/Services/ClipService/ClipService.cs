@@ -128,5 +128,107 @@
 
             }
         }
+
+        public async Task<ServiceResponse<GetClipDto>> LikeClip(int id)
+        {
+            var response = new ServiceResponse<GetClipDto>();
+
+            try
+            {
+                var clip = await _context.Clips
+                    .Include(u => u.User)
+                    .Include(g => g.Game)
+                    .Include(c => c.Comments)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+
+                if (clip is null)
+                {
+                    response.Success = false;
+                    response.Message = "Clip not found";
+                    return response;
+                }
+                else if (user is null)
+                {
+                    response.Success = false;
+                    response.Message = "User not found";
+                    return response;
+                }
+
+                if (await _context.Likes.AnyAsync(l => l.User!.Id == user!.Id && l.Clip!.Id == clip.Id))
+                {
+                    response.Success = false;
+                    response.Message = "Clip already liked by this user";
+                    return response;
+                }
+
+                var like = new Like
+                {
+                    User = user,
+                    Clip = clip,
+                };
+
+                clip.LikeAmount += 1;
+
+                _context.Likes.Add(like);
+                await _context.SaveChangesAsync();
+
+                response.Data = _mapper.Map<GetClipDto>(clip);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<GetClipDto>> DislikeClip(int id)
+        {
+            var response = new ServiceResponse<GetClipDto>();
+
+            try
+            {
+                var clip = await _context.Clips
+                    .Include(u => u.User)
+                    .Include(g => g.Game)
+                    .Include(c => c.Comments)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+
+                if (clip is null)
+                {
+                    response.Success = false;
+                    response.Message = "Clip not found";
+                    return response;
+                }
+
+                var like = await _context.Likes.FirstOrDefaultAsync(l => l.User!.Id == user!.Id && l.Clip!.Id == clip.Id);
+
+                if (like is null)
+                {
+                    response.Success = false;
+                    response.Message = "Clip not liked by this user";
+                    return response;
+                }
+
+                clip.LikeAmount -= 1;
+
+                _context.Likes.Remove(like);
+                await _context.SaveChangesAsync();
+
+                response.Data = _mapper.Map<GetClipDto>(clip);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
     }
 }

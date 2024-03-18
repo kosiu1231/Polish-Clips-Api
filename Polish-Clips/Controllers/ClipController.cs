@@ -24,5 +24,27 @@ namespace Polish_Clips.Controllers
                 return NotFound(response);
             return Ok(response);
         }
+
+        //get
+
+        [Authorize]
+        [HttpPost("clip/{id:int}/like")]
+        public async Task<ActionResult<ServiceResponse<GetClipDto>>> LikeClip(int id)
+        {
+            var response = await _clipService.LikeClip(id);
+            if (response.Data is null)
+                return NotFound(response);
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPost("clip/{id:int}/dislike")]
+        public async Task<ActionResult<ServiceResponse<GetClipDto>>> DislikeClip(int id)
+        {
+            var response = await _clipService.DislikeClip(id);
+            if (response.Data is null)
+                return NotFound(response);
+            return Ok(response);
+        }
     }
 }
