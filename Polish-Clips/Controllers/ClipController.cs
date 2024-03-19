@@ -25,7 +25,14 @@ namespace Polish_Clips.Controllers
             return Ok(response);
         }
 
-        //get
+        [HttpGet("clips")]
+        public async Task<ActionResult<ServiceResponse<List<GetClipDto>>>> GetClips([FromQuery] QueryObject query)
+        {
+            var response = await _clipService.GetClips(query);
+            if (response.Data is null)
+                return NotFound(response);
+            return Ok(response);
+        }
 
         [Authorize]
         [HttpPost("clip/{id:int}/like")]

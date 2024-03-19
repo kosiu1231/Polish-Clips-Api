@@ -1,4 +1,7 @@
-﻿namespace Polish_Clips.Services.ClipService
+﻿
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
+namespace Polish_Clips.Services.ClipService
 {
     public class ClipService : IClipService
     {
@@ -127,6 +130,67 @@
                 }
 
             }
+        }
+
+        public async Task<ServiceResponse<List<GetClipDto>>> GetClips([FromQuery] QueryObject query)
+        {
+            var response = new ServiceResponse<List<GetClipDto>>();
+
+            try
+            {
+                var clips = _context.Clips
+                    .Include(u => u.User)
+                    .Include(g => g.Game)
+                    .Include(c => c.Comments).AsQueryable();
+
+                if(!string.IsNullOrWhiteSpace(query.Name))
+                    clips = clips.Where(c => c.Title.Contains(query.Name));
+
+                if (!string.IsNullOrWhiteSpace(query.Game))
+                    clips = clips.Where(c => c.Game!.Name.Contains(query.Game));
+
+                if (!string.IsNullOrWhiteSpace(query.Broadcaster))
+                    clips = clips.Where(c => c.StreamerName.Contains(query.Broadcaster));
+
+                if (query.StartDate is not null)
+                    clips = clips.Where(c => c.CreatedAt > query.StartDate);
+
+                if (query.EndDate is not null)
+                    clips = clips.Where(c => c.CreatedAt < query.EndDate);
+
+                if (clips.Count() == 0)
+                {
+                    response.Success = false;
+                    response.Message = "No clips found";
+                    return response;
+                }
+
+                if (!string.IsNullOrWhiteSpace(query.SortBy))
+                {
+                    if (query.SortBy == "LikeAmount")
+                    {
+                        clips = query.IsDescending ? clips.OrderByDescending(c => c.LikeAmount)
+                            : clips.OrderBy(c => c.LikeAmount);
+                    }
+                    else if (query.SortBy == "CreatedAt")
+                    {
+                        clips = query.IsDescending ? clips.OrderByDescending(c => c.CreatedAt)
+                            : clips.OrderBy(c => c.CreatedAt);
+                    }
+                }
+
+                int skipNumber = (query.PageNumber - 1) * query.PageSize;
+                clips = clips.Skip(skipNumber).Take(query.PageSize);
+
+                response.Data = await clips.Select(m => _mapper.Map<GetClipDto>(m)).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
         }
 
         public async Task<ServiceResponse<GetClipDto>> LikeClip(int id)
