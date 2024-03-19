@@ -27,7 +27,7 @@
             var response = await _twitchApiService.AddClipsByStreamers();
             if (!response.Success)
             {
-                return BadRequest(response);
+                return NotFound(response);
             }
             return Ok(response);
         }
@@ -38,7 +38,7 @@
             var response = await _twitchApiService.AddBroadcasters();
             if (!response.Success)
             {
-                return BadRequest(response);
+                return NotFound(response);
             }
             return Ok(response);
         }

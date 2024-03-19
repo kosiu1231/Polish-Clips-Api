@@ -1,5 +1,7 @@
 ﻿namespace Polish_Clips.Controllers
 {
+    [ApiController]
+    [Route("api")]
     public class ReportController : ControllerBase
     {
         private readonly IReportService _reportService;
@@ -18,7 +20,7 @@
 
             var response = await _reportService.AddReport(newReport);
             if (response.Data is null)
-                return NotFound(response);
+                return BadRequest(response);
             return Ok(response);
         }
 

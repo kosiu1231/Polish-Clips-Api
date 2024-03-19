@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace Polish_Clips.Controllers
+﻿namespace Polish_Clips.Controllers
 {
     [ApiController]
     [Route("api")]
@@ -22,7 +20,7 @@ namespace Polish_Clips.Controllers
 
             var response = await _commentService.AddComment(newComment);
             if (response.Data is null)
-                return NotFound(response);
+                return BadRequest(response);
             return Ok(response);
         }
 
@@ -32,7 +30,7 @@ namespace Polish_Clips.Controllers
         {
             var response = await _commentService.DeleteComment(id);
             if (response.Data is null)
-                return NotFound(response);
+                return BadRequest(response);
             return Ok(response);
         }
     }
