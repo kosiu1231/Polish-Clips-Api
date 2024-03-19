@@ -24,7 +24,7 @@
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost("report/{id:int}/review")]
         public async Task<ActionResult<ServiceResponse<GetReportDto>>> ReviewReport(int id)
         {

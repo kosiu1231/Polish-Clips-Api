@@ -10,6 +10,7 @@
             _twitchApiService = twitchApiService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("game")]//only for testing, remove later
         public async Task<ActionResult<ServiceResponse<string>>> AddGame(TwitchApiGetGameBy gameByObject)
         {
@@ -21,6 +22,7 @@
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("autoclipsbystreamers")]//only for testing, remove later
         public async Task<ActionResult<ServiceResponse<string>>> AddClipsByStreamers()
         {
@@ -32,6 +34,7 @@
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("autobroadcasters")]//only for testing, remove later
         public async Task<ActionResult<ServiceResponse<string>>> AddBroadcasters()
         {

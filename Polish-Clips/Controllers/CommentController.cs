@@ -24,7 +24,7 @@
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("comment")]
         public async Task<ActionResult<ServiceResponse<GetClipDto>>> DeleteComment(int id)
         {
