@@ -23,6 +23,15 @@
             return Ok(response);
         }
 
+        [HttpGet("clip/{id:int}")]
+        public async Task<ActionResult<ServiceResponse<GetClipDto>>> GetClip(int id)
+        {
+            var response = await _clipService.GetClip(id);
+            if (response.Data is null)
+                return NotFound(response);
+            return Ok(response);
+        }
+
         [HttpGet("clips")]
         public async Task<ActionResult<ServiceResponse<List<GetClipDto>>>> GetClips([FromQuery] QueryObject query)
         {

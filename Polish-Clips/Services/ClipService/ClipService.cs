@@ -132,6 +132,36 @@ namespace Polish_Clips.Services.ClipService
             }
         }
 
+        public async Task<ServiceResponse<GetClipDto>> GetClip(int id)
+        {
+            var response = new ServiceResponse<GetClipDto>();
+
+            try
+            {
+                var clip = await _context.Clips
+                    .Include(u => u.User)
+                    .Include(g => g.Game)
+                    .Include(c => c.Comments)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (clip is null)
+                {
+                    response.Success = false;
+                    response.Message = "Clip not found";
+                    return response;
+                }
+
+                response.Data = _mapper.Map<GetClipDto>(clip);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
         public async Task<ServiceResponse<List<GetClipDto>>> GetClips([FromQuery] QueryObject query)
         {
             var response = new ServiceResponse<List<GetClipDto>>();
