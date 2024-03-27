@@ -33,9 +33,6 @@ namespace Polish_Clips.Services.CommentService
                     .Include(c => c.Comments)
                     .FirstOrDefaultAsync(c => c.Id == comment.ClipId);
 
-                comment.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
-                comment.Clip = clip;
-
                 if (clip is null)
                 {
                     response.Success = false;
@@ -43,6 +40,10 @@ namespace Polish_Clips.Services.CommentService
                     return response;
                 }
 
+                comment.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+                comment.Clip = clip;
+                clip!.CommentAmount += 1;
+                
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
                 response.Data = _mapper.Map<GetClipDto>(clip);
@@ -91,6 +92,8 @@ namespace Polish_Clips.Services.CommentService
                     response.Message = "Clip not found";
                     return response;
                 }
+
+                clip.CommentAmount -= 1;
 
                 clip!.Comments!.Remove(comment);
                 _context.Comments.Remove(comment);
