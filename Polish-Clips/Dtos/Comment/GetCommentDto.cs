@@ -6,5 +6,6 @@
         public string Text { get; set; } = string.Empty;
         public int ClipId { get; set; }
         public GetUserDto? User { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

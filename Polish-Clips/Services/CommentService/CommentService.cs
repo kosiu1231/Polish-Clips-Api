@@ -42,7 +42,7 @@ namespace Polish_Clips.Services.CommentService
 
                 comment.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
                 comment.Clip = clip;
-                clip!.CommentAmount += 1;
+                comment.CreatedAt = DateTime.Now;
                 
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
@@ -92,8 +92,6 @@ namespace Polish_Clips.Services.CommentService
                     response.Message = "Clip not found";
                     return response;
                 }
-
-                clip.CommentAmount -= 1;
 
                 clip!.Comments!.Remove(comment);
                 _context.Comments.Remove(comment);

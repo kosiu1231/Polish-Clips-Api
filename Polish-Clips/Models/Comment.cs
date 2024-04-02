@@ -7,5 +7,6 @@
         public User? User { get; set; }
         public Clip? Clip { get; set; }
         public int ClipId { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }
