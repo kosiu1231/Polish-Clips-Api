@@ -141,7 +141,7 @@ namespace Polish_Clips.Services.ClipService
                 var clip = await _context.Clips
                     .Include(u => u.User)
                     .Include(g => g.Game)
-                    .Include(c => c.Comments)
+                    .Include(c => c.Comments!).ThenInclude(u => u.User)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (clip is null)
