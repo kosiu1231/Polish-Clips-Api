@@ -26,17 +26,17 @@ namespace Polish_Clips.Data
             if (user is null)
             {
                 response.Success = false;
-                response.Message = "User not found.";
+                response.Message = "Nie znaleziono użytkownika.";
             }
             else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
                 response.Success = false;
-                response.Message = "Wrong password.";
+                response.Message = "Niepoprawne hasło.";
             }
             else if (user.VerifiedAt is null)
             {
                 response.Success = false;
-                response.Message = "Email not verified";
+                response.Message = "E-mail niezweryfikowany";
             }
             else
             {
@@ -53,13 +53,13 @@ namespace Polish_Clips.Data
             if (await EmailExists(user.Email) || await UsernameExists(user.Username))
             {
                 response.Success = false;
-                response.Message = "User already exists";
+                response.Message = "Użytkownik już istnieje.";
                 return response;
             }
             else if (!password.Equals(confirmPassword))
             {
                 response.Success = false;
-                response.Message = "Passwords do not match";
+                response.Message = "Hasła się nie zgadzają.";
                 return response;
             }
 
@@ -86,7 +86,7 @@ namespace Polish_Clips.Data
             if (user is null)
             {
                 response.Success = false;
-                response.Message = "User not found";
+                response.Message = "Nie znaleziono użytkownika.";
                 return response;
             }
 
@@ -94,7 +94,7 @@ namespace Polish_Clips.Data
             user.ResetTokenExpires = DateTime.Now.AddMinutes(15);
             await _context.SaveChangesAsync();
 
-            response.Message = "Token will be valid for 15min";
+            response.Message = "Token będzie ważny przez 15 minut.";
 
             SendResetPasswordEmail(user.Email, user.Username, user.PasswordResetToken);
 
@@ -109,7 +109,7 @@ namespace Polish_Clips.Data
             if (user is null || user.ResetTokenExpires < DateTime.Now)
             {
                 response.Success = false;
-                response.Message = "Invalid token";
+                response.Message = "Niepoprawny token.";
                 return response;
             }
 
@@ -122,7 +122,7 @@ namespace Polish_Clips.Data
 
             await _context.SaveChangesAsync();
 
-            response.Data = "Password changed";
+            response.Data = "Hasło zmienione.";
             return response;
         }
 
@@ -134,7 +134,7 @@ namespace Polish_Clips.Data
             if (user is null)
             {
                 response.Success = false;
-                response.Message = "Invalid token";
+                response.Message = "Niepoprawny token.";
                 return response;
             }
 
