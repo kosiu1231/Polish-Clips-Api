@@ -27,7 +27,7 @@
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<ServiceResponse<string>>> Login(UserLoginRequest request)
+        public async Task<ActionResult<ServiceResponse<UserLoginResponse>>> Login(UserLoginRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

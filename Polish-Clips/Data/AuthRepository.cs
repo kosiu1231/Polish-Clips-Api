@@ -4,6 +4,7 @@ using SendGrid;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Polish_Clips.Models;
 
 namespace Polish_Clips.Data
 {
@@ -11,17 +12,20 @@ namespace Polish_Clips.Data
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public AuthRepository(DataContext context, IConfiguration configuration)
+        public AuthRepository(DataContext context, IConfiguration configuration, IMapper mapper)
         {
             _context = context;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<string>> Login(string email, string password)
+        public async Task<ServiceResponse<UserLoginResponse>> Login(string email, string password)
         {
-            var response = new ServiceResponse<string>();
+            var response = new ServiceResponse<UserLoginResponse>();
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var loginResponse = new UserLoginResponse();
 
             if (user is null)
             {
@@ -40,7 +44,12 @@ namespace Polish_Clips.Data
             }
             else
             {
-                response.Data = CreateToken(user);
+                var token = CreateToken(user);
+                loginResponse = new UserLoginResponse{
+                    Token = token,
+                    User = _mapper.Map<GetUserDto>(user)
+                };
+                response.Data = loginResponse;
             }
 
             return response;
