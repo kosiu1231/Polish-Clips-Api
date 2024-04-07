@@ -132,6 +132,40 @@ namespace Polish_Clips.Services.ClipService
             }
         }
 
+        public async Task<ServiceResponse<string>> DeleteClip(int id)
+        {
+            var response = new ServiceResponse<string>();
+
+            try
+            {
+                var clip = await _context.Clips
+                    .Include(c => c.Comments)
+                    .Include(l => l.Likes)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (clip is null)
+                {
+                    response.Success = false;
+                    response.Message = "Clip not found";
+                    response.Data = "Clip not found";
+                    return response;
+                }
+                _context.Comments.RemoveRange(clip.Comments!);
+                _context.Likes.RemoveRange(clip.Likes!);
+                _context.Clips.Remove(clip);
+                await _context.SaveChangesAsync();
+
+                response.Data = "Clip deleted";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
         public async Task<ServiceResponse<GetClipDto>> GetClip(int id)
         {
             var response = new ServiceResponse<GetClipDto>();
@@ -264,6 +298,7 @@ namespace Polish_Clips.Services.ClipService
                 };
 
                 clip.LikeAmount += 1;
+                clip.Likes!.Add(like);
 
                 _context.Likes.Add(like);
                 await _context.SaveChangesAsync();
@@ -309,6 +344,7 @@ namespace Polish_Clips.Services.ClipService
                     return response;
                 }
 
+                clip.Likes!.Remove(like);
                 clip.LikeAmount -= 1;
 
                 _context.Likes.Remove(like);

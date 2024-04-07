@@ -23,6 +23,16 @@
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("clip")]
+        public async Task<ActionResult<ServiceResponse<string>>> DeleteClip(int id)
+        {
+            var response = await _clipService.DeleteClip(id);
+            if (response.Data is null)
+                return BadRequest(response);
+            return Ok(response);
+        }
+
         [HttpGet("clip/{id:int}")]
         public async Task<ActionResult<ServiceResponse<GetClipDto>>> GetClip(int id)
         {

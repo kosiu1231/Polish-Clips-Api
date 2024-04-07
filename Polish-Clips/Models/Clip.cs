@@ -13,6 +13,7 @@
         public User? User { get; set; }
         public Game? Game { get; set; }
         public List<Comment>? Comments { get; set; }
+        public List<Like>? Likes { get; set; } = new List<Like>();
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
