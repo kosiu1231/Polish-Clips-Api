@@ -107,7 +107,7 @@ app.MapControllers();
 app.UseHangfireDashboard();
 
 //RecurringJob.AddOrUpdate<TwitchApiService>("AddClipsJob", (x) =>
-//x.AddClipsByStreamers(), "0 */2 * * *");//every 2 full hours
+//x.AddClipsByStreamers(), "0 * * * *");//every full hour
 
 //RecurringJob.AddOrUpdate<TwitchApiService>("AddBroadcastersJob", (x) =>
 //x.AddBroadcasters(), "0 */3 * * *");//every 3 full hours

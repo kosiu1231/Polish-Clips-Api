@@ -208,7 +208,7 @@
             string baseUrl = "https://api.twitch.tv/helix/clips";
             var accessTokenObject = _context.TwitchAccessTokens.FirstOrDefault();
             var clientId = _configuration.GetSection("TwitchApi:clientId").Value;
-            DateTime startDate = DateTime.UtcNow.AddHours(-8);
+            DateTime startDate = DateTime.UtcNow.AddHours(-3);
             DateTime endDate = DateTime.UtcNow;
             string startDateRFC = startDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK");
             string endDateRFC = endDate.ToString("yyyy-MM-dd'T'HH:mm:ss.fffK");
