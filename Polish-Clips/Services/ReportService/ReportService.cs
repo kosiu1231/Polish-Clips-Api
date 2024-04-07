@@ -1,4 +1,5 @@
 ﻿using Polish_Clips.Dtos.Report;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Polish_Clips.Services.ReportService
 {
@@ -64,9 +65,40 @@ namespace Polish_Clips.Services.ReportService
             return response;
         }
 
-        public async Task<ServiceResponse<GetReportDto>> ReviewReport(int id)
+        public async Task<ServiceResponse<List<GetReportDto>>> GetReports()
         {
-            var response = new ServiceResponse<GetReportDto>();
+            var response = new ServiceResponse<List<GetReportDto>>();
+
+            try
+            {
+                var reports = _context.Reports
+                    .Include(u => u.User)
+                    .Include(g => g.Clip).ThenInclude(u => u!.User)
+                    .Include(g => g.Clip).ThenInclude(g => g!.Game)
+                    .Include(g => g.Clip).ThenInclude(c => c!.Comments)
+                    .AsQueryable();
+
+                if (reports.Count() == 0)
+                {
+                    response.Success = false;
+                    response.Message = "No reports found";
+                    return response;
+                }
+
+                response.Data = await reports.Select(r => _mapper.Map<GetReportDto>(r)).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<GetReportDto>>> ReviewReport(int id)
+        {
+            var response = new ServiceResponse<List<GetReportDto>>();
 
             try
             {
@@ -95,7 +127,14 @@ namespace Polish_Clips.Services.ReportService
                 report.isReviewed = true;
                 await _context.SaveChangesAsync();
 
-                response.Data = _mapper.Map<GetReportDto>(report);
+                var reports = _context.Reports
+                    .Include(u => u.User)
+                    .Include(g => g.Clip).ThenInclude(u => u!.User)
+                    .Include(g => g.Clip).ThenInclude(g => g!.Game)
+                    .Include(g => g.Clip).ThenInclude(c => c!.Comments)
+                    .AsQueryable();
+
+                response.Data = await reports.Select(r => _mapper.Map<GetReportDto>(r)).ToListAsync();
             }
             catch (Exception ex)
             {

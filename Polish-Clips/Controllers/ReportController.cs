@@ -25,8 +25,18 @@
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet("reports")]
+        public async Task<ActionResult<ServiceResponse<List<GetReportDto>>>> GetReports()
+        {
+            var response = await _reportService.GetReports();
+            if (response.Data is null)
+                return NotFound(response);
+            return Ok(response);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost("report/{id:int}/review")]
-        public async Task<ActionResult<ServiceResponse<GetReportDto>>> ReviewReport(int id)
+        public async Task<ActionResult<ServiceResponse<List<GetReportDto>>>> ReviewReport(int id)
         {
             var response = await _reportService.ReviewReport(id);
             if (response.Data is null)
