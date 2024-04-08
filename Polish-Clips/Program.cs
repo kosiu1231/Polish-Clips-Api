@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using HangfireBasicAuthenticationFilter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.EnableSensitiveDataLogging();
 });
     
 builder.Services.AddControllers();
@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Policy1",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "https://polish-clips.vercel.app")
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
         });
@@ -85,6 +85,8 @@ builder.Services.AddHangfire((sp, config) =>
     config.UseSqlServerStorage(connectionString);
 });
 
+var _configuration = builder.Configuration;
+
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();
@@ -104,7 +106,16 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseHangfireDashboard();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[]
+        {
+                new HangfireCustomBasicAuthenticationFilter{
+                    User = _configuration.GetSection("HangfireSettings:UserName").Value,
+                    Pass = _configuration.GetSection("HangfireSettings:Password").Value
+                }
+            }
+});
 
 //RecurringJob.AddOrUpdate<TwitchApiService>("AddClipsJob", (x) =>
 //x.AddClipsByStreamers(), "0 * * * *");//every full hour
