@@ -1,7 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore.Infrastructure;
-
-namespace Polish_Clips.Services.ClipService
+﻿namespace Polish_Clips.Services.ClipService
 {
     public class ClipService : IClipService
     {
@@ -29,6 +26,7 @@ namespace Polish_Clips.Services.ClipService
         public async Task<ServiceResponse<GetClipDto>> AddClip(AddClipDto newClip)
         {
             var response = new ServiceResponse<GetClipDto>();
+            string timeZoneId = "";
 
             try
             {
@@ -67,9 +65,12 @@ namespace Polish_Clips.Services.ClipService
                     clip.Game = await _context.Games.FirstOrDefaultAsync(g => g.Id == clips[0].game_id);
                 }
 
+                timeZoneId = "Central European Standard Time";
+                DateTime localDateTime = TimeZoneInfo.ConvertTimeFromUtc(clips[0].created_at, TimeZoneInfo.FindSystemTimeZoneById(timeZoneId));
+
                 clip.EmbedUrl = clips[0].embed_url;
                 clip.StreamerName = clips[0].broadcaster_name;
-                clip.CreatedAt = clips[0].created_at;
+                clip.CreatedAt = localDateTime;
                 clip.ThumbnailUrl = clips[0].thumbnail_url;
                 clip.Duration = clips[0].duration;
                 if (String.IsNullOrWhiteSpace(clip.Title))

@@ -6,7 +6,7 @@
         public string embed_url { get; set; } = string.Empty;
         public int broadcaster_id { get; set; }
         public string broadcaster_name { get; set; } = string.Empty;
-        public int game_id { get; set; }
+        public int? game_id { get; set; }
         public string title { get; set; } = string.Empty;
         public int? view_count { get; set; }
         public DateTime created_at { get; set; }

@@ -133,6 +133,7 @@
         public async Task<ServiceResponse<string>> AddClipsByStreamers()
         {
             var response = new ServiceResponse<string>();
+            string timeZoneId = "";
 
             try
             {
@@ -154,10 +155,18 @@
                             break;
                         }
 
+                        if (clip.game_id == null)
+                        {
+                            continue;
+                        }
+
                         if (await _context.Clips.AnyAsync(c => c.TwitchId == clip.id))
                         {
                             continue;
                         }
+
+                        timeZoneId = "Central European Standard Time";
+                        DateTime localDateTime = TimeZoneInfo.ConvertTimeFromUtc(clip.created_at, TimeZoneInfo.FindSystemTimeZoneById(timeZoneId));
 
                         var newClip = new Clip
                         {
@@ -165,7 +174,7 @@
                             Title = clip.title,
                             EmbedUrl = clip.embed_url,
                             StreamerName = clip.broadcaster_name,
-                            CreatedAt = clip.created_at,
+                            CreatedAt = localDateTime,
                             ThumbnailUrl = clip.thumbnail_url,
                             Duration = clip.duration
                         };
