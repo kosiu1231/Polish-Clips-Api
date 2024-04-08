@@ -12,6 +12,7 @@
         public string? PasswordResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
         public UserRole? Role { get; set; } = null;
+        public List<Like>? Likes { get; set; } = new List<Like>();
         public List<Clip>? Clips { get; set; }
     }
 }

@@ -5,5 +5,6 @@
         public int Id { get; set; }
         public User? User { get; set; }
         public Clip? Clip { get; set; }
+        public int ClipId { get; set; }
     }
 }

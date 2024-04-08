@@ -295,9 +295,11 @@ namespace Polish_Clips.Services.ClipService
                 {
                     User = user,
                     Clip = clip,
+                    ClipId = clip.Id
                 };
 
                 clip.LikeAmount += 1;
+                user.Likes!.Add(like);
                 clip.Likes!.Add(like);
 
                 _context.Likes.Add(like);
@@ -334,6 +336,12 @@ namespace Polish_Clips.Services.ClipService
                     response.Message = "Clip not found";
                     return response;
                 }
+                else if (user is null)
+                {
+                    response.Success = false;
+                    response.Message = "User not found";
+                    return response;
+                }
 
                 var like = await _context.Likes.FirstOrDefaultAsync(l => l.User!.Id == user!.Id && l.Clip!.Id == clip.Id);
 
@@ -345,6 +353,7 @@ namespace Polish_Clips.Services.ClipService
                 }
 
                 clip.Likes!.Remove(like);
+                user!.Likes!.Remove(like);
                 clip.LikeAmount -= 1;
 
                 _context.Likes.Remove(like);

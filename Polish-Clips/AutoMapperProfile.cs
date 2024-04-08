@@ -10,6 +10,7 @@ namespace Polish_Clips
             CreateMap<AddClipDto, Clip>();
             CreateMap<User, GetUserDto>();
             CreateMap<Game, GetGameDto>();
+            CreateMap<Like, GetLikeDto>();
             CreateMap<AddCommentDto, Comment>();
             CreateMap<Comment, GetCommentDto>();
             CreateMap<Report, GetReportDto>();

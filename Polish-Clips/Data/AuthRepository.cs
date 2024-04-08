@@ -24,7 +24,7 @@ namespace Polish_Clips.Data
         public async Task<ServiceResponse<UserLoginResponse>> Login(string email, string password)
         {
             var response = new ServiceResponse<UserLoginResponse>();
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.Include(u => u.Likes).FirstOrDefaultAsync(u => u.Email == email);
             var loginResponse = new UserLoginResponse();
 
             if (user is null)
@@ -47,8 +47,14 @@ namespace Polish_Clips.Data
                 var token = CreateToken(user);
                 loginResponse = new UserLoginResponse{
                     Token = token,
-                    User = _mapper.Map<GetUserDto>(user)
+                    User = _mapper.Map<GetUserDto>(user),
                 };
+                
+                if(user.Likes!.Any())
+                {
+                    loginResponse.Likes = user.Likes!.Select(like => _mapper.Map<GetLikeDto>(like)).ToList();
+                }
+
                 response.Data = loginResponse;
             }
 
