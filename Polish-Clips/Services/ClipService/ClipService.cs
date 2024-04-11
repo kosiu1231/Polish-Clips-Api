@@ -244,6 +244,8 @@
                     }
                 }
 
+                response.NoOfElements = clips.Count();
+
                 int skipNumber = (query.PageNumber - 1) * query.PageSize;
                 clips = clips.Skip(skipNumber).Take(query.PageSize);
 
