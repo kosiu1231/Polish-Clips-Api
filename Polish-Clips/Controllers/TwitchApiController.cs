@@ -45,5 +45,11 @@
             }
             return Ok(response);
         }
+
+        [HttpGet("refresh")]//only for testing, remove later
+        public ActionResult<string> Refresh()
+        {
+            return Ok("refreshed");
+        }
     }
 }

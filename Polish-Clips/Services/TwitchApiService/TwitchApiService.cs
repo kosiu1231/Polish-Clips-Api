@@ -1,4 +1,6 @@
-﻿namespace Polish_Clips.Services.TwitchApiService
+﻿using System.Net.Http;
+
+namespace Polish_Clips.Services.TwitchApiService
 {
     public class TwitchApiService : ITwitchApiService
     {
@@ -23,7 +25,7 @@
                     string.IsNullOrWhiteSpace(gameByObject.Name) && gameByObject.ByName == true)
                 {
                     response.Success = false;
-                    response.Message = "Invalid request";
+                    response.Message = "Nieprawidłowe zapytanie.";
                     return response;
                 }
 
@@ -32,7 +34,7 @@
                     if (await _context.Games.AnyAsync(g => g.Id == gameByObject.Id))
                     {
                         response.Success = false;
-                        response.Message = "Game already is in database";
+                        response.Message = "Gra znajduje się już w bazie danych.";
                         return response;
                     }
 
@@ -43,7 +45,7 @@
                     if (await _context.Games.AnyAsync(g => g.Name == gameByObject.Name))
                     {
                         response.Success = false;
-                        response.Message = "Game already is in database";
+                        response.Message = "Gra znajduje się już w bazie danych.";
                         return response;
                     }
 
@@ -53,7 +55,7 @@
                 if (games.Count() < 1)
                 {
                     response.Success = false;
-                    response.Message = "Game not found";
+                    response.Message = "Nie znaleziono gry.";
                     return response;
                 }
 
@@ -411,6 +413,12 @@
             }
 
             return response;
+        }
+
+        public async Task KeepAppAlive()
+        {
+            using (HttpClient client = new HttpClient())
+                await client.GetAsync("https://polish-clips.azurewebsites.net/twitchapi/refresh");
         }
     }
 }

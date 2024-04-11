@@ -41,14 +41,14 @@ namespace Polish_Clips.Services.ReportService
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
 
                 if (await _context.Reports.AnyAsync(r => r.User!.Id == user!.Id && r.Clip!.Id == clip.Id))
                 {
                     response.Success = false;
-                    response.Message = "Clip already reported by this user";
+                    response.Message = "Klip został już zgłoszony przez użytkownika.";
                     return response;
                 }
 
@@ -81,7 +81,7 @@ namespace Polish_Clips.Services.ReportService
                 if (reports.Count() == 0)
                 {
                     response.Success = false;
-                    response.Message = "No reports found";
+                    response.Message = "Nie znaleziono zgłoszeń.";
                     return response;
                 }
 
@@ -105,7 +105,7 @@ namespace Polish_Clips.Services.ReportService
                 if (GetUserRole() != "Admin")
                 {
                     response.Success = false;
-                    response.Message = "Invalid role";
+                    response.Message = "Nieprawidłowa rola.";
                     return response;
                 }
 
@@ -120,7 +120,7 @@ namespace Polish_Clips.Services.ReportService
                 if (report is null)
                 {
                     response.Success = false;
-                    response.Message = "Report not found";
+                    response.Message = "Nie znaleziono zgłoszenia.";
                     return response;
                 }
 

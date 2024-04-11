@@ -38,7 +38,7 @@
                 if (await _context.Clips.AnyAsync(c => c.TwitchId == clip.TwitchId))
                 {
                     response.Success = false;
-                    response.Message = "Clip already is in database";
+                    response.Message = "Klip znajduje się już w bazie danych.";
                     return response;
                 }
 
@@ -47,7 +47,7 @@
                 if(clips.Count() < 1)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
 
@@ -147,8 +147,8 @@
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
-                    response.Data = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
+                    response.Data = "Nie znaleziono klipu.";
                     return response;
                 }
                 _context.Comments.RemoveRange(clip.Comments!);
@@ -156,7 +156,7 @@
                 _context.Clips.Remove(clip);
                 await _context.SaveChangesAsync();
 
-                response.Data = "Clip deleted";
+                response.Data = "Klip usunięty.";
             }
             catch (Exception ex)
             {
@@ -182,7 +182,7 @@
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
 
@@ -226,7 +226,7 @@
                 if (clips.Count() == 0)
                 {
                     response.Success = false;
-                    response.Message = "No clips found";
+                    response.Message = "Nie znaleziono klipów.";
                     return response;
                 }
 
@@ -275,20 +275,20 @@
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
                 else if (user is null)
                 {
                     response.Success = false;
-                    response.Message = "User not found";
+                    response.Message = "Nie znaleziono użytkownika.";
                     return response;
                 }
 
                 if (await _context.Likes.AnyAsync(l => l.User!.Id == user!.Id && l.Clip!.Id == clip.Id))
                 {
                     response.Success = false;
-                    response.Message = "Clip already liked by this user";
+                    response.Message = "Klip został już polubiony przez użytkownika.";
                     return response;
                 }
 
@@ -334,13 +334,13 @@
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
                 else if (user is null)
                 {
                     response.Success = false;
-                    response.Message = "User not found";
+                    response.Message = "Nie znaleziono użytkownika.";
                     return response;
                 }
 
@@ -349,7 +349,7 @@
                 if (like is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not liked by this user";
+                    response.Message = "Klip nie został jeszcze polubiony przez użytkownika.";
                     return response;
                 }
 

@@ -27,7 +27,7 @@ namespace Polish_Clips.Services.GameService
                 if (games.Count() == 0)
                 {
                     response.Success = false;
-                    response.Message = "No games found";
+                    response.Message = "Nie znaleziono gier.";
                     return response;
                 }
 

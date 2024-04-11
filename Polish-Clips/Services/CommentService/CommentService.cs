@@ -36,7 +36,7 @@ namespace Polish_Clips.Services.CommentService
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
 
@@ -66,7 +66,7 @@ namespace Polish_Clips.Services.CommentService
                 if(GetUserRole() != "Admin")
                 {
                     response.Success = false;
-                    response.Message = "Invalid role";
+                    response.Message = "Nieprawidłowa rola.";
                     return response;
                 }    
 
@@ -76,7 +76,7 @@ namespace Polish_Clips.Services.CommentService
                 if (comment is null)
                 {
                     response.Success = false;
-                    response.Message = "Comment not found";
+                    response.Message = "Nie znaleziono komentarza.";
                     return response;
                 }
 
@@ -89,7 +89,7 @@ namespace Polish_Clips.Services.CommentService
                 if (clip is null)
                 {
                     response.Success = false;
-                    response.Message = "Clip not found";
+                    response.Message = "Nie znaleziono klipu.";
                     return response;
                 }
 

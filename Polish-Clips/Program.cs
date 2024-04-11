@@ -123,4 +123,7 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 //RecurringJob.AddOrUpdate<TwitchApiService>("AddBroadcastersJob", (x) =>
 //x.AddBroadcasters(), "0 */3 * * *");//every 3 full hours
 
+RecurringJob.AddOrUpdate<TwitchApiService>("AddKeepAppAliveJob", (x) =>
+x.KeepAppAlive(), "*/3 * * * *");//every 3 minutes
+
 app.Run();
