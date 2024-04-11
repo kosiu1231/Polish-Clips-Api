@@ -47,7 +47,6 @@ namespace Polish_Clips.Data
                 var token = CreateToken(user);
                 loginResponse = new UserLoginResponse{
                     Token = token,
-                    User = _mapper.Map<GetUserDto>(user),
                 };
                 
                 if(user.Likes!.Any())
