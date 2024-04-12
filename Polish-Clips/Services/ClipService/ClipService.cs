@@ -1,4 +1,6 @@
-﻿namespace Polish_Clips.Services.ClipService
+﻿using Polish_Clips.Models;
+
+namespace Polish_Clips.Services.ClipService
 {
     public class ClipService : IClipService
     {
@@ -7,14 +9,16 @@
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
         private readonly ITwitchApiService _twitchApiService;
+        private readonly ILogger<ClipService> _logger;
 
-        public ClipService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ITwitchApiService twitchApiService)
+        public ClipService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ITwitchApiService twitchApiService, ILogger<ClipService> logger)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _configuration = configuration;
             _twitchApiService = twitchApiService;
+            _logger = logger;
         }
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User
@@ -80,6 +84,7 @@
                 clip.Game!.Clips!.Add(clip);
                 await _context.SaveChangesAsync();
                 response.Data = _mapper.Map<GetClipDto>(clip);
+                _logger.LogInformation($"Clip({clip.Id}) added by {clip.User!.Username}: {clip.Title}");
             }
             catch (Exception ex)
             {
