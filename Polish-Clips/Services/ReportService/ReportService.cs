@@ -1,4 +1,5 @@
 ﻿using Polish_Clips.Dtos.Report;
+using Polish_Clips.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Polish_Clips.Services.ReportService
@@ -8,12 +9,14 @@ namespace Polish_Clips.Services.ReportService
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<ReportService> _logger;
 
-        public ReportService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
+        public ReportService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, ILogger<ReportService> logger)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User
@@ -55,6 +58,7 @@ namespace Polish_Clips.Services.ReportService
                 _context.Reports.Add(report);
                 await _context.SaveChangesAsync();
                 response.Data = _mapper.Map<GetReportDto>(report);
+                _logger.LogInformation($"Clip {clip.Id} reported by {user!.Username}: {newReport.Text}");
             }
             catch (Exception ex)
             {
