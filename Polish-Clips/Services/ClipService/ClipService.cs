@@ -314,6 +314,7 @@ namespace Polish_Clips.Services.ClipService
                 await _context.SaveChangesAsync();
 
                 response.Data = _mapper.Map<GetClipDto>(clip);
+                _logger.LogInformation($"Clip({clip.Id}) liked by {clip.User!.Username}.");
             }
             catch (Exception ex)
             {
@@ -368,6 +369,7 @@ namespace Polish_Clips.Services.ClipService
                 await _context.SaveChangesAsync();
 
                 response.Data = _mapper.Map<GetClipDto>(clip);
+                _logger.LogInformation($"Clip({clip.Id}) disliked by {clip.User!.Username}.");
             }
             catch (Exception ex)
             {
