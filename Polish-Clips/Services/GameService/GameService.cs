@@ -1,4 +1,5 @@
 ﻿
+using Polish_Clips.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Polish_Clips.Services.GameService
@@ -31,11 +32,15 @@ namespace Polish_Clips.Services.GameService
                     return response;
                 }
 
+                response.NoOfElements = games.Count();
+
+                games = games.OrderByDescending(g => g.Clips!.Count);
+
                 int skipNumber = (query.PageNumber - 1) * query.PageSize;
 
                 games = games.Skip(skipNumber).Take(query.PageSize);
 
-                response.Data = await games.OrderByDescending(g => g.Clips!.Count)
+                response.Data = await games
                     .Select(g => _mapper.Map<GetGameDto>(g)).ToListAsync();
             }
             catch (Exception ex)
