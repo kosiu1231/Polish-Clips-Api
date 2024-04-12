@@ -6,12 +6,14 @@ namespace Polish_Clips.Services.CommentService
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<CommentService> _logger;
 
-        public CommentService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
+        public CommentService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, ILogger<CommentService> logger)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User
@@ -47,6 +49,7 @@ namespace Polish_Clips.Services.CommentService
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
                 response.Data = _mapper.Map<GetClipDto>(clip);
+                _logger.LogInformation($"Comment added by {comment.User!.Username}: {newComment.Text}");
             }
             catch (Exception ex)
             {
