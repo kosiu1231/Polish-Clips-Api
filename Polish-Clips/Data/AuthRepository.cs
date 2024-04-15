@@ -13,12 +13,14 @@ namespace Polish_Clips.Data
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ILogger<AuthRepository> _logger;
 
-        public AuthRepository(DataContext context, IConfiguration configuration, IMapper mapper)
+        public AuthRepository(DataContext context, IConfiguration configuration, IMapper mapper, ILogger<AuthRepository> logger)
         {
             _context = context;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ServiceResponse<UserLoginResponse>> Login(string email, string password)
@@ -88,6 +90,7 @@ namespace Polish_Clips.Data
             response.Data = user.Email;
 
             SendVerificationEmail(user.Email, user.Username, user.VerificationToken);
+            _logger.LogInformation($"User {user.Username} registered.");
 
             return response;
         }
